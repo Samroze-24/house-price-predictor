@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+model.pkl
+metrics.json
+.DS_Store

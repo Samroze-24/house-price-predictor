@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>House Price Predictor — Pakistan</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <p class="eyebrow">Machine Learning · Sample Data Demo</p>
+      <h1>House Price Predictor</h1>
+      <p class="subtitle">
+        Enter a property's details and get an AI-estimated price in PKR,
+        with an explanation of what pushed the price up or down.
+      </p>
+      {% if metrics %}
+      <p class="model-note">
+        Model on sample data — R² {{ metrics.r2 }} · Mean Absolute Error
+        {{ "{:,.0f}".format(metrics.mae_pkr) }} PKR ({{ metrics.test_rows }} held-out houses)
+      </p>
+      {% endif %}
+    </div>
+  </header>
+
+  <main class="container layout">
+    <section class="card form-card">
+      <h2>Property details</h2>
+      <form id="predict-form">
+        <label>City
+          <select name="city" required>
+            {% for city in cities %}<option value="{{ city }}">{{ city }}</option>{% endfor %}
+          </select>
+        </label>
+
+        <div class="row">
+          <label>Area
+            <input type="number" name="area" min="1" max="100" step="0.5" value="10" required />
+          </label>
+          <label>Unit
+            <select name="area_unit">
+              <option value="marla" selected>Marla</option>
+              <option value="sqft">Sq ft</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="row">
+          <label>Bedrooms
+            <input type="number" name="bedrooms" min="1" max="10" value="4" required />
+          </label>
+          <label>Bathrooms
+            <input type="number" name="bathrooms" min="1" max="8" value="3" required />
+          </label>
+        </div>
+
+        <div class="row">
+          <label>Property age (years)
+            <input type="number" name="age_years" min="0" max="60" value="5" required />
+          </label>
+          <label>Location tier
+            <select name="location_tier" required>
+              {% for tier in tiers %}<option value="{{ tier }}">{{ tier }}</option>{% endfor %}
+            </select>
+          </label>
+        </div>
+
+        <button type="submit" id="submit-btn">Estimate price</button>
+        <p class="error" id="form-error" hidden></p>
+      </form>
+    </section>
+
+    <section class="card result-card" id="result" hidden>
+      <p class="eyebrow">Estimated price</p>
+      <h2 id="price">—</h2>
+      <p class="range" id="price-range"></p>
+      <p class="compact" id="price-compact"></p>
+
+      <h3>What pushed the price up or down?</h3>
+      <p class="hint">Compared with a typical house in the sample data, using the model itself.</p>
+      <div id="impacts"></div>
+
+      <h3>What-if</h3>
+      <p id="what-if"></p>
+    </section>
+
+    <section class="card compare-card">
+      <h2>Price comparison by city</h2>
+      <p class="hint">Average price in the sample dataset — not real market averages.</p>
+      <div id="city-averages"><p class="hint">Loading…</p></div>
+    </section>
+  </main>
+
+  <footer class="container">
+    <p>
+      Demo only. All prices come from a synthetic sample dataset
+      (<code>data/sample_houses.csv</code>) and are not real market prices
+      or a property valuation.
+    </p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
